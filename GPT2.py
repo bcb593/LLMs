@@ -21,8 +21,8 @@ imdb = load_dataset("parquet", data_dir="/scratch0/bashyalb/LLMs/imdb", data_fil
 
 class SentimentAnalysisDataset(Dataset):
     def __init__(self, texts, labels, tokenizer, max_token_len=512):
-        self.texts = texts
-        self.labels = labels
+        self.texts = texts[:100]
+        self.labels = labels[:100]
         self.tokenizer = tokenizer
         self.max_token_len = max_token_len
 
@@ -59,7 +59,7 @@ class GPT2Classifier(nn.Module):
 
     def forward(self, input_ids, attention_mask):
         outputs = self.gpt2(input_ids=input_ids, attention_mask=attention_mask)
-        sequence_output = outputs.last_hidden_state[:, 0, :]  # Use the representation of the [CLS] token
+        sequence_output = outputs.last_hidden_state[:, 0, :] 
         sequence_output = self.dropout(sequence_output)
         logits = self.classifier(sequence_output)
         return logits
@@ -97,4 +97,22 @@ for epoch in range(3):
         optimizer.step()
     print(f"Epoch {epoch}: Loss {total_loss / len(train_loader)}")
 
-# Evaluation logic remains similar, ensure model is set to eval mode and calculate accuracy
+def evaluate_model(model, data_loader, device):
+    model.eval()
+    total_loss, total_accuracy = 0, 0
+    correct_predictions = 0
+
+    with torch.no_grad():
+        for batch in tqdm(data_loader, desc="Evaluating"):
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['labels'].to(device)
+
+            outputs = model(input_ids, attention_mask)
+            _, preds = torch.max(outputs, dim=1)
+            correct_predictions += torch.sum(preds == labels)
+
+    print(f"Accuracy: {correct_predictions.double() / len(data_loader.dataset):.4f}")
+
+evaluate_model(model, test_loader, device)
+
