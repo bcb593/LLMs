@@ -9,12 +9,21 @@ from tqdm import tqdm
 import torch.nn as nn
 
 
-
+if torch.cuda.is_available():
+    print(f"Number of GPUs available: {torch.cuda.device_count()}")
+    for i in range(torch.cuda.device_count()):
+        print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
+else:
+    print("CUDA is not available. Listing devices:")
+    print(torch.cuda.list_gpu_processes())
 
 data_files = {"train":"train-00000-of-00001.parquet", "test":"test-00000-of-00001.parquet", "unsupervised":"unsupervised-00000-of-00001.parquet"}
 imdb = load_dataset("parquet", data_dir="../LLMS/imdb", data_files=data_files)
 
-
+device_index = 2  # Change this to 0 or 2 to use the first or third GPU, respectively.
+torch.cuda.set_device(device_index)
+device = torch.device(f"cuda:{device_index}")
+print(f"Using GPU: {torch.cuda.get_device_name(device)}")
 
 tokenizer=AutoTokenizer.from_pretrained('bert-base-uncased')
 
@@ -102,7 +111,7 @@ test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
 model=fineTuneBert()
 epochs=20
-
+model=model.to(device)
 
 # In[12]:
 
@@ -110,9 +119,9 @@ epochs=20
 for epoch in tqdm(range(epochs)):
    # print('Epoch:',epoch)
     for batch in train_loader: 
-        input_ids=batch['input_ids']
-        labels=batch['labels']
-        attention_mask=batch['attention_mask']
+        input_ids=batch['input_ids'].to(device)
+        labels=batch['labels'].to(device)
+        attention_mask=batch['attention_mask'].to(device)
         output=model(input_ids,attention_mask)
 
 
