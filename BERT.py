@@ -22,10 +22,6 @@ else:
 data_files = {"train":"train-00000-of-00001.parquet", "test":"test-00000-of-00001.parquet", "unsupervised":"unsupervised-00000-of-00001.parquet"}
 imdb = load_dataset("parquet", data_dir="/scratch0/bashyalb/LLMs/imdb", data_files=data_files)
 
-device_index = 2  # Change this to 0 or 2 to use the first or third GPU, respectively.
-torch.cuda.set_device(device_index)
-device = torch.device(f"cuda:{device_index}")
-print(f"Using GPU: {torch.cuda.get_device_name(device)}")
 
 tokenizer=AutoTokenizer.from_pretrained('bert-base-uncased')
 
