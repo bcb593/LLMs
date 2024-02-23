@@ -20,7 +20,7 @@ else:
     print("CUDA is not available. Using CPU instead.")
 
 data_files = {"train":"train-00000-of-00001.parquet", "test":"test-00000-of-00001.parquet", "unsupervised":"unsupervised-00000-of-00001.parquet"}
-imdb = load_dataset("parquet", data_dir="/scratch0/bashyalb/LLMS/imdb", data_files=data_files)
+imdb = load_dataset("parquet", data_dir="/scratch0/bashyalb/LLMs/imdb", data_files=data_files)
 
 device_index = 2  # Change this to 0 or 2 to use the first or third GPU, respectively.
 torch.cuda.set_device(device_index)
