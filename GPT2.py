@@ -21,8 +21,8 @@ imdb = load_dataset("parquet", data_dir="/scratch0/bashyalb/LLMs/imdb", data_fil
 
 class SentimentAnalysisDataset(Dataset):
     def __init__(self, texts, labels, tokenizer, max_token_len=512):
-        self.texts = texts[:1000]
-        self.labels = labels[:1000]
+        self.texts = texts
+        self.labels = labels
         self.tokenizer = tokenizer
         self.max_token_len = max_token_len
 
@@ -72,8 +72,8 @@ tokenizer.pad_token = tokenizer.eos_token
 train_dataset = SentimentAnalysisDataset(imdb['train']['text'], imdb['train']['label'], tokenizer)
 test_dataset = SentimentAnalysisDataset(imdb['test']['text'], imdb['test']['label'], tokenizer)
 
-train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
 model = GPT2Classifier().to(device)
 optimizer = AdamW(model.parameters(), lr=5e-5)
