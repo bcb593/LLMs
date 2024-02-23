@@ -4,6 +4,37 @@ from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 import torch.nn as nn
 
+class SentimentAnalysisDataset(Dataset):
+    def __init__(self, texts, labels, tokenizer, max_token_len=512):
+        self.texts = texts
+        self.labels = labels
+        self.tokenizer = tokenizer
+        self.max_token_len = max_token_len
+
+    def __len__(self):
+        return len(self.texts)
+
+    def __getitem__(self, idx):
+        text = self.texts[idx]
+        labels = self.labels[idx]
+
+        encoding = self.tokenizer.encode_plus(
+            text,
+            add_special_tokens=True,
+            max_length=self.max_token_len,
+            return_token_type_ids=False,
+            padding='max_length',
+            truncation=True,
+            return_attention_mask=True,
+            return_tensors='pt',
+        )
+
+        return {
+            'input_ids': encoding['input_ids'].flatten(),
+            'attention_mask': encoding['attention_mask'].flatten(),
+            'labels': torch.tensor(labels, dtype=torch.long)
+        }
+
 class GPT2Classifier(nn.Module):
     def __init__(self, n_classes=2):
         super(GPT2Classifier, self).__init__()
