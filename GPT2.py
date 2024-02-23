@@ -72,8 +72,8 @@ tokenizer.pad_token = tokenizer.eos_token
 train_dataset = SentimentAnalysisDataset(imdb['train']['text'], imdb['train']['label'], tokenizer)
 test_dataset = SentimentAnalysisDataset(imdb['test']['text'], imdb['test']['label'], tokenizer)
 
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
 
 model = GPT2Classifier().to(device)
 optimizer = AdamW(model.parameters(), lr=5e-5)
