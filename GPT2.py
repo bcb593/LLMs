@@ -1,8 +1,23 @@
 import torch
 from transformers import GPT2Model, GPT2Tokenizer, AdamW
+from datasets import load_dataset
+from transformers import AutoTokenizer, AutoModel
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 import torch.nn as nn
+from transformers import AdamW
+
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+    print(f"Available GPUs: {torch.cuda.device_count()}")
+    for i in range(torch.cuda.device_count()):
+        print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
+else:
+    device = torch.device("cpu")
+    print("CUDA is not available. Using CPU instead.")
+
+data_files = {"train":"train-00000-of-00001.parquet", "test":"test-00000-of-00001.parquet", "unsupervised":"unsupervised-00000-of-00001.parquet"}
+imdb = load_dataset("parquet", data_dir="/scratch0/bashyalb/LLMs/imdb", data_files=data_files)
 
 class SentimentAnalysisDataset(Dataset):
     def __init__(self, texts, labels, tokenizer, max_token_len=512):
