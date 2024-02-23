@@ -119,7 +119,7 @@ model.to(device)
 # In[12]:
 
 
-for epoch in range(epochs)):
+for epoch in range(epochs):
    print('Epoch:',epoch)
     for batch in tqdm(train_loader): 
         input_ids=batch['input_ids'].to(device)
