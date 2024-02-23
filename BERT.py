@@ -119,9 +119,9 @@ model.to(device)
 # In[12]:
 
 
-for epoch in tqdm(range(epochs)):
-   # print('Epoch:',epoch)
-    for batch in train_loader: 
+for epoch in range(epochs)):
+   print('Epoch:',epoch)
+    for batch in tqdm(train_loader): 
         input_ids=batch['input_ids'].to(device)
         labels=batch['labels'].to(device)
         attention_mask=batch['attention_mask'].to(device)
