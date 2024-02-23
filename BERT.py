@@ -87,7 +87,7 @@ model=fineTuneBert()
 epochs=5
 
 loss_fn = nn.CrossEntropyLoss().to(device)
-optimizer = AdamW(model.parameters(), lr=0.00001)
+optimizer = AdamW(model.parameters(), lr=0.000001)
 
 if torch.cuda.device_count() > 1:
     print(f"Let's use {torch.cuda.device_count()} GPUs!")
