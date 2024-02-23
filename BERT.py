@@ -84,7 +84,7 @@ train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 
 model=fineTuneBert()
-epochs=20
+epochs=5
 
 loss_fn = nn.CrossEntropyLoss().to(device)
 optimizer = AdamW(model.parameters(), lr=5e-5)
