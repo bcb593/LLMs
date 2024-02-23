@@ -1,0 +1,55 @@
+import torch
+from transformers import GPT2Model, GPT2Tokenizer, AdamW
+from torch.utils.data import Dataset, DataLoader
+from tqdm import tqdm
+import torch.nn as nn
+
+class GPT2Classifier(nn.Module):
+    def __init__(self, n_classes=2):
+        super(GPT2Classifier, self).__init__()
+        self.gpt2 = GPT2Model.from_pretrained('gpt2')
+        self.dropout = nn.Dropout(0.1)
+        self.classifier = nn.Linear(self.gpt2.config.hidden_size, n_classes)
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.gpt2(input_ids=input_ids, attention_mask=attention_mask)
+        sequence_output = outputs.last_hidden_state[:, 0, :]  # Use the representation of the [CLS] token
+        sequence_output = self.dropout(sequence_output)
+        logits = self.classifier(sequence_output)
+        return logits
+
+# Assume SentimentAnalysisDataset is defined similarly as before, adapted for GPT-2 tokenization
+
+# Initialize tokenizer and datasets
+tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+# Make sure to update paths and dataset loading according to your setup
+train_dataset = SentimentAnalysisDataset(imdb['train']['text'], imdb['train']['label'], tokenizer)
+test_dataset = SentimentAnalysisDataset(imdb['test']['text'], imdb['test']['label'], tokenizer)
+
+train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
+
+# Model, optimizer, and loss function
+model = GPT2Classifier().to(device)
+optimizer = AdamW(model.parameters(), lr=5e-5)
+loss_fn = nn.CrossEntropyLoss().to(device)
+
+# Training loop
+model.train()
+for epoch in range(3):  # Example: 3 epochs
+    total_loss = 0
+    for batch in tqdm(train_loader):
+        optimizer.zero_grad()
+        input_ids = batch['input_ids'].to(device)
+        attention_mask = batch['attention_mask'].to(device)
+        labels = batch['labels'].to(device)
+
+        logits = model(input_ids, attention_mask)
+        loss = loss_fn(logits, labels)
+        total_loss += loss.item()
+
+        loss.backward()
+        optimizer.step()
+    print(f"Epoch {epoch}: Loss {total_loss / len(train_loader)}")
+
+# Evaluation logic remains similar, ensure model is set to eval mode and calculate accuracy
