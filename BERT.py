@@ -81,8 +81,8 @@ class fineTuneBert(nn.Module):
 
 
 train_dataset = SentimentAnalysisDataset(
-    texts=imdb['train']['text'][:10000],
-    labels=imdb['train']['label'][:10000],
+    texts=imdb['train']['text'],
+    labels=imdb['train']['label'],
     tokenizer=tokenizer
 )
 validation_dataset=SentimentAnalysisDataset(
