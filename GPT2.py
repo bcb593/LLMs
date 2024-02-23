@@ -21,8 +21,8 @@ imdb = load_dataset("parquet", data_dir="/scratch0/bashyalb/LLMs/imdb", data_fil
 
 class SentimentAnalysisDataset(Dataset):
     def __init__(self, texts, labels, tokenizer, max_token_len=512):
-        self.texts = texts[:100]
-        self.labels = labels[:100]
+        self.texts = texts[:1000]
+        self.labels = labels[:1000]
         self.tokenizer = tokenizer
         self.max_token_len = max_token_len
 
@@ -81,7 +81,7 @@ loss_fn = nn.CrossEntropyLoss().to(device)
 
 
 model.train()
-for epoch in range(3): 
+for epoch in range(5): 
     total_loss = 0
     for batch in tqdm(train_loader):
         optimizer.zero_grad()
