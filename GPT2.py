@@ -64,25 +64,24 @@ class GPT2Classifier(nn.Module):
         logits = self.classifier(sequence_output)
         return logits
 
-# Assume SentimentAnalysisDataset is defined similarly as before, adapted for GPT-2 tokenization
 
-# Initialize tokenizer and datasets
+
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-# Make sure to update paths and dataset loading according to your setup
+tokenizer.pad_token = tokenizer.eos_token
+
 train_dataset = SentimentAnalysisDataset(imdb['train']['text'], imdb['train']['label'], tokenizer)
 test_dataset = SentimentAnalysisDataset(imdb['test']['text'], imdb['test']['label'], tokenizer)
 
-train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-# Model, optimizer, and loss function
 model = GPT2Classifier().to(device)
 optimizer = AdamW(model.parameters(), lr=5e-5)
 loss_fn = nn.CrossEntropyLoss().to(device)
 
-# Training loop
+
 model.train()
-for epoch in range(3):  # Example: 3 epochs
+for epoch in range(3): 
     total_loss = 0
     for batch in tqdm(train_loader):
         optimizer.zero_grad()
