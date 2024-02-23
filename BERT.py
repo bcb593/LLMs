@@ -97,6 +97,7 @@ model.to(device)
 
 for epoch in range(epochs):
     print('Epoch:',epoch)
+    total_loss=0
     for batch in tqdm(train_loader): 
         input_ids=batch['input_ids'].to(device)
         labels=batch['labels'].to(device)
