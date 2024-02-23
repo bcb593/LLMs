@@ -101,7 +101,7 @@ for epoch in range(epochs):
         input_ids=batch['input_ids'].to(device)
         labels=batch['labels'].to(device)
         attention_mask=batch['attention_mask'].to(device)
-        output=model(input_ids,attention_mask)
+        outputs=model(input_ids,attention_mask)
         loss = loss_fn(outputs, labels)
         total_loss += loss.item()
 
