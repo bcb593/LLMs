@@ -9,16 +9,18 @@ from tqdm import tqdm
 import torch.nn as nn
 
 
+
 if torch.cuda.is_available():
-    print(f"Number of GPUs available: {torch.cuda.device_count()}")
+    device = torch.device("cuda")
+    print(f"Available GPUs: {torch.cuda.device_count()}")
     for i in range(torch.cuda.device_count()):
         print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
 else:
-    print("CUDA is not available. Listing devices:")
-    print(torch.cuda.list_gpu_processes())
+    device = torch.device("cpu")
+    print("CUDA is not available. Using CPU instead.")
 
 data_files = {"train":"train-00000-of-00001.parquet", "test":"test-00000-of-00001.parquet", "unsupervised":"unsupervised-00000-of-00001.parquet"}
-imdb = load_dataset("parquet", data_dir="../LLMS/imdb", data_files=data_files)
+imdb = load_dataset("parquet", data_dir="/scratch0/bashyalb/LLMS/imdb", data_files=data_files)
 
 device_index = 2  # Change this to 0 or 2 to use the first or third GPU, respectively.
 torch.cuda.set_device(device_index)
@@ -111,7 +113,12 @@ test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
 model=fineTuneBert()
 epochs=20
-model=model.to(device)
+
+if torch.cuda.device_count() > 1:
+    print(f"Let's use {torch.cuda.device_count()} GPUs!")
+    model = torch.nn.DataParallel(model)
+
+model.to(device)
 
 # In[12]:
 
